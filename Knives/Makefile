@@ -29,6 +29,7 @@ BOOST_DIR = /usr/local
 INCLUDE += -I$(BOOST_DIR)/include
 LIBS    += -L$(BOOST_DIR)/lib
 
+SCPH_DIR=../
 USER_LIBS     += -L$(SCPH_DIR)/Stools/lib -lStools
 USER_LIBS     += -L$(SCPH_DIR)/Monkey/lib -lMonkey
 USER_INCLUDES += -I$(SCPH_DIR)/Stools/include/
@@ -41,7 +42,6 @@ LD  = g++
 CXXFLAGS = -Wall -W -O3
 LDFLAGS = -shared -Wall -W
 
-FLAGS += $(USER_LIBS)
 FLAGS += $(USER_INCLUDES)
 
 # Build a list of srcs and bins to build

@@ -28,26 +28,22 @@ LIBS    += -L$(BOOST_DIR)/lib
 
 ROOT_FLAGS  := $(shell $(ROOTSYS)/bin/root-config --cflags)
 ROOT_LIBS   := $(shell $(ROOTSYS)/bin/root-config --libs)
-#ROOT_LIBS    = $(shell $(ROOTSYS)/bin/root-config --libs) -lTreePlayer -lMinuit -lXMLIO -lMLP -lRIO -lTMVA -lHtml -lMinuit
-#ROOFIT_LIBS  = ${ROOT_LIBS} -lRooStats -lFoam -lHtml -lMinuit
-ROOFIT_LIBS  = ${ROOT_LIBS} -lFoam
 
-#USER_LIBS += -L$(SCPH_DIR)/Easel/lib/ -lEasel
+SCPH_DIR=../
 USER_LIBS += -L$(SCPH_DIR)/Stools/lib/ -lStools
-#USER_LIBS += -L$(SCPH_DIR)/Knives/lib/ -lKnives
 
 #USER_INCLUDES += -I$(SCPH_DIR)/Easel/include/
 USER_INCLUDES += -I$(SCPH_DIR)/Stools/include/
 #USER_INCLUDES += -I$(SCPH_DIR)/Knives/include/
 
-ROOFIT_LIBS += $(USER_LIBS)
+ROOT_LIBS += $(USER_LIBS)
 
 CXX = g++
 LD  = g++
 CXXFLAGS = -Wall -W -O3
 LDFLAGS  = -shared -Wall -W
 
-FLAGS += $(USER_LIBS)
+#FLAGS += $(USER_LIBS)
 FLAGS += $(USER_INCLUDES)
 
 # Build a list of srcs and bins to build
@@ -61,7 +57,7 @@ $(OBJ_DIR)/%.$(OBJ_EXT): $(SRC_DIR)/%.cpp $(INC_DIR)/%.hpp
 	$(CXX) $(FLAGS) -c $< -o $@
 
 $(LIB_DIR)/lib$(LIBNAME).so: $(OBJS)
-	$(LD) $(LDFLAGS) -shared -o $(LIB_DIR)/lib$(LIBNAME).so $(OBJS) $(ROOFIT_LIBS)
+	$(LD) $(LDFLAGS) -shared -o $(LIB_DIR)/lib$(LIBNAME).so $(OBJS) $(ROOT_LIBS)
 	cp -f $(LIB_DIR)/lib$(LIBNAME).so $(SCPH_DIR)/lib/lib$(LIBNAME).so
 
 lib: $(LIB_DIR)/lib$(LIBNAME).so

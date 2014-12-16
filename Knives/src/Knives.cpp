@@ -207,5 +207,9 @@ std::vector<Knife*> Knives::getCuts() {
   return cuts_;
 }
 
+unsigned Knives::size() {
+    return cuts_.size();
+}
+
 
 }

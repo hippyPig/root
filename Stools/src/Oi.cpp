@@ -129,10 +129,8 @@ void OiCount::getMsg(
   std::stringstream ss;
   if (entry % 10000 == 0) {
     ss << msg << " " << entry << " of " << entries << "  ("
-      << std::fixed << std::setprecision(1)
-      << 100. * static_cast<double>(entry) / static_cast<double>(entries)
-      << " %)               \r";
-    std::cout.flush();
+      << scph::dtos(100. * static_cast<double>(entry) /
+          static_cast<double>(entries), 1) << " %)";
   }
   if (entry == entries) {
     ss << "Finished : " << msg << " " << entries << " entries"

@@ -54,6 +54,7 @@ class Knives {
   void update(std::string, double, double);
   void update(std::vector<std::string>, double);
   void update(std::vector<std::string>, float);
+  unsigned size();
 
   std::vector<Knife*> getCuts();
   std::string cut_string();

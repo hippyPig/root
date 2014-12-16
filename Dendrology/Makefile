@@ -18,7 +18,7 @@ FLAGS  		 = -O3 -Wall -W -fPIC
 INCLUDE		+= -I$(INC_DIR)
 FLAGS       += ${INCLUDE}
 FLAGS       += ${ROOT_FLAGS}
-FLAGS       += -lRooFitCore -lRooFit -lRooStats -lFoam
+#FLAGS       += -lRooFitCore -lRooFit -lRooStats -lFoam
 LIBS         = ${ROOT_LIBS}
 
 BOOST_DIR = /usr/local
@@ -29,24 +29,25 @@ ROOT_FLAGS   = $(shell $(ROOTSYS)/bin/root-config --cflags)
 ROOT_LIBS    = $(shell $(ROOTSYS)/bin/root-config --libs) -lTreePlayer -lMinuit -lXMLIO -lMLP -lRIO -lTMVA
 ROOFIT_LIBS  = ${ROOT_LIBS} -lRooFitCore -lRooFit -lRooStats -lFoam
 
-USER_LIBS += -L$(SCPH_DIR)/Easel/lib/ -lEasel
+SCPH_DIR=../
+#USER_LIBS += -L$(SCPH_DIR)/Easel/lib/ -lEasel
 USER_LIBS += -L$(SCPH_DIR)/Stools/lib/ -lStools
 USER_LIBS += -L$(SCPH_DIR)/Knives/lib/ -lKnives
 USER_LIBS += -L$(SCPH_DIR)/Monkey/lib/ -lMonkey
 
-USER_INCLUDES += -I$(SCPH_DIR)/Easel/include/
+#USER_INCLUDES += -I$(SCPH_DIR)/Easel/include/
 USER_INCLUDES += -I$(SCPH_DIR)/Stools/include/
 USER_INCLUDES += -I$(SCPH_DIR)/Knives/include/
 USER_INCLUDES += -I$(SCPH_DIR)/Monkey/include/
 
-ROOFIT_LIBS += $(USER_LIBS)
+ROOT_LIBS += $(USER_LIBS)
 
 CXX = g++
 LD  = g++
 CXXFLAGS = -Wall -W -O3
 LDFLAGS  = -shared -Wall -W
 
-FLAGS += $(USER_LIBS)
+#FLAGS += $(USER_LIBS)
 FLAGS += $(USER_INCLUDES)
 
 # Build a list of srcs and bins to build
@@ -60,7 +61,7 @@ $(OBJ_DIR)/%.$(OBJ_EXT): $(SRC_DIR)/%.cpp $(INC_DIR)/%.hpp
 	$(CXX) $(FLAGS) -c $< -o $@
 
 $(LIB_DIR)/lib$(LIBNAME).so: $(OBJS)
-	$(LD) $(LDFLAGS) -shared -o $(LIB_DIR)/lib$(LIBNAME).so $(OBJS) $(ROOFIT_LIBS)
+	$(LD) $(LDFLAGS) $(ROOFIT_LIBS) -shared -o $(LIB_DIR)/lib$(LIBNAME).so $(OBJS) $(ROOT_LIBS)
 
 lib: $(LIB_DIR)/lib$(LIBNAME).so
 

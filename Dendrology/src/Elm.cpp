@@ -1,18 +1,15 @@
 #define SCPH_ELM_CLASS_H_cxx
 #include "Elm.hpp"
 
-#include <iostream>
-#include <assert.h>
-
 #include "TFile.h"
-#include "TTree.h"
 #include "TH1.h"
 #include "TRandom3.h"
-
-#include "Easel1D.hpp"
-#include "Easel2D.hpp"
+#include "TTree.h"
 #include "Utils.hpp"
 
+#include <assert.h>
+
+#include <iostream>
 
 Elm::Elm(TTree* tree) :
     pass_all_(true),
@@ -111,6 +108,10 @@ void Elm::addCuts(Kcuts& cuts) {
   pass_entries_ = 0;
   pass_all_ = true;
   int entries = this->tree_->GetEntries();
+  if (cuts.size() == 0) {
+    oiinfo << "No Knife in Knives";
+    return;
+  }
   for (int entry=0; entry<entries; ++entry) {
     oiinfo.count(entry, entries, "Adding cuts to Elm");
     if (this->getEntry(entry)) {
@@ -126,6 +127,7 @@ void Elm::addCuts(Kcuts& cuts) {
   oiinfo << "Entries, entries passed: " << entries << ", " << pass_entries_;
   oiinfo << "Efficiency: " << (double)pass_entries_ / entries * 100. << " %";
   oibye << "Elm::addCuts()";
+  return;
 }
 
 
@@ -231,16 +233,27 @@ void Elm::removeMultipleCandidates() {
   int entries = this->tree_->GetEntries();
   int candidates = 0;
   int events = 0;
-  ULong64_t* nevt = this->getPtr<ULong64_t>("eventNumber");
+  //ULong64_t* nevt = this->getPtr<ULong64_t>("eventNumber");
+  ULong64_t nevt = 0;
+  if (!this->isBranch("eventNumber")) {
+    oierror << "No eventNumber in the tree!";
+    throw;
+  }
+  this->tree_->SetBranchStatus("eventNumber", 1);
+  this->tree_->SetBranchAddress("eventNumber", &nevt);
   for (int entry=0; entry<entries; ++entry) {
+    events++;
     if(this->getEntry(entry)) {
-      events++;
+      //oiinfo << nevt;
       if (nevt_vec.size() == 0) {
-        nevt_vec.push_back(*nevt);
+        //nevt_vec.push_back(*nevt);
+        nevt_vec.push_back(nevt);
         entry_vec.push_back(entry);
         pass_.at(entry) = false;
-      } else if (nevt_vec.back() == *nevt) {
-        nevt_vec.push_back(*nevt);
+        //} else if (nevt_vec.back() == *nevt) {
+      } else if (nevt_vec.back() == nevt) {
+        //nevt_vec.push_back(*nevt);
+        nevt_vec.push_back(nevt);
         entry_vec.push_back(entry);
         pass_.at(entry) = false;
       } else {
@@ -253,7 +266,8 @@ void Elm::removeMultipleCandidates() {
         entry_vec.clear();
         //this->tree_->GetEntry(entry);
         this->barrel_->getEntry(entry);
-        nevt_vec.push_back(*nevt);
+        //nevt_vec.push_back(*nevt);
+        nevt_vec.push_back(nevt);
         entry_vec.push_back(entry);
       }
     }
@@ -297,22 +311,22 @@ bool Elm::isBranch(const std::string& var) {
 
 
 bool Elm::isBool(const std::string& branch) {
-  return Stools::isBool(this->tree_, branch);
+  return scph::isBool(this->tree_, branch);
 }
 
 
 bool Elm::isDouble(const std::string& branch) {
-  return Stools::isDouble(this->tree_, branch);
+  return scph::isDouble(this->tree_, branch);
 }
 
 
 bool Elm::isInt(const std::string& branch) {
-  return Stools::isInt(this->tree_, branch);
+  return scph::isInt(this->tree_, branch);
 }
 
 
 bool Elm::isFloat(const std::string& branch) {
-  return Stools::isFloat(this->tree_, branch);
+  return scph::isFloat(this->tree_, branch);
 }
 
 
@@ -401,6 +415,19 @@ void Elm::setBranchEndsWith(const std::string& set, const bool& apply) {
 }
 
 
+void Elm::setBranchStartsWith(const std::string& set, const bool& apply) {
+  TObjArray* arr = this->tree_->GetListOfBranches();
+  TIter nextbranch(arr);
+  TBranch* branch;
+  while ((branch = static_cast<TBranch*>(nextbranch()))) {
+    if (scph::startsWith(branch->GetName(), set)) {
+      tree_->SetBranchStatus(branch->GetName(), apply);
+    }
+  }
+  return;
+}
+
+
 void Elm::setBranchContains(const std::string& set, const bool& apply) {
   TObjArray* arr = this->tree_->GetListOfBranches();
   TIter nextbranch(arr);
@@ -454,4 +481,19 @@ void Elm::write(const std::string& filename) {
   return;
 }
 
+
+RooDataSet* Elm::getDataSet(RooRealVar*& rrv, const std::string& vname, const std::string& name) {
+  unsigned entries = getEntries();
+  double* var = this->getPtr<double>(vname);
+  RooDataSet* data = new RooDataSet(name.c_str(), "", RooArgSet(*rrv));
+  for (unsigned entry=0; entry<entries; ++entry) {
+    if (getEntry(entry)) {
+      if (*var > rrv->getMin() && *var < rrv->getMax()) {
+        rrv->setVal(*var);
+        data->add(*rrv);
+      }
+    }
+  }
+  return data;
+}
 

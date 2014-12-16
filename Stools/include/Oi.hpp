@@ -1,10 +1,7 @@
 #ifndef SCPH_OISHOUT_CLASS_H
 #define SCPH_OISHOUT_CLASS_H
-#include <iostream>
-#include <iomanip>
-#include <sstream>
-
 #include "Spectrum.hpp"
+#include "Utils.hpp"
 
 
 // =============================================================================
@@ -259,6 +256,7 @@ class Oi {
     if (shouter_.output()) {
       if (!greeted_) {
         shouter_.greet();
+        greeted_ = true;
       }
       std::cout << v;
     }
@@ -276,15 +274,16 @@ class Oi {
     if (entry % 10000 == 0) {
       shouter_.greet();
       std::cout <<  msg << " " << entry << " of " << entries << "  ("
-        << std::fixed << std::setprecision(1)
-        << 100. * static_cast<double>(entry) / static_cast<double>(entries)
-        << " %)               \r";
+        << scph::dtos(100. * static_cast<double>(entry) /
+            static_cast<double>(entries), 1) << " %)"
+        << "               \r";
       std::cout.flush();
     }
     if (entry == entries - 1) {
       shouter_.greet();
       std::cout << "Finished : " << msg << " " << entries << " entries"
-        << "                            " << std::endl;
+        << "                            ";
+      shouter_.bye();
     }
     return;
   }

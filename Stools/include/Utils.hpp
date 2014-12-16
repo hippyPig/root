@@ -1,83 +1,29 @@
-// Define
 #ifndef SCPH_STOOLS_UTILS_NAMESPACE_H
 #define SCPH_STOOLS_UTILS_NAMESPACE_H
-
-// Include standard
-#include <vector>
-#include <string>
-#include <iomanip>
-
-// Include ROOT
-#include "TLorentzVector.h"
-#include "TTree.h"
+//------------------------------------------------------------------------------
+#include "TFile.h"
 #include "TH1D.h"
 #include "TH2D.h"
+#include "TLorentzVector.h"
+#include "TTree.h"
 
-// Include mine
-#include "Oi.hpp"
-
-// Include boost
-#include <boost/lexical_cast.hpp>
 #include <boost/algorithm/string.hpp>
 #include <boost/function.hpp>
+#include <boost/lexical_cast.hpp>
 
-//------------------------------------------------------------------------------
+#include <iomanip>
+#include <string>
+#include <vector>
+
 // Sam Hall's Utilities header
 //------------------------------------------------------------------------------
-
-// Typedefs
-typedef std::vector<std::string> svector;
-
-//==============================================================================
-// For the ease of not being in namespace
-//==============================================================================
-void Count(const int&, const int&);
-void Progress(const int&, const int&, const std::string& msg="Analysing");
-void Linebreak();
-
-
-//==============================================================================
-// Old namespace, being replaced by scph
-//==============================================================================
-namespace Stools {
-
-  // Foward declarations:
-  std::string replace(std::string, const std::string&, const std::string&);
-  svector splitString(std::string str, std::string delimiter);
-
-  void swapPID(TLorentzVector& p4, double m);
-  TLorentzVector getP4(double*, double*, double*, double*);
-  TLorentzVector getSwapPID(const TLorentzVector& p4, double m);
-  TLorentzVector getP4SwapPID(double*, double*, double*, double*, double);
-
-  char getBranchType(TTree*, std::string);
-  bool isInt(TTree*, const std::string&);
-  bool isBool(TTree*, const std::string&);
-  bool isFloat(TTree*, const std::string&);
-  bool isDouble(TTree*, const std::string&);
-  bool isBranch(TTree*, const std::string&);
-
-
-  // Templated functions:
-  template <typename Type>
-  inline std::string ntos(const Type number) {
-    return boost::lexical_cast<std::string>(number);
-  }
-
-  template <typename Type>
-  inline std::string dtos(const Type number, const int& precision) {
-    std::ostringstream ss;
-    ss << std::fixed << std::setprecision(precision);
-    ss << number;
-    return ss.str();
-  }
-} // namespace Stools
-
-
 //==============================================================================
 // New and better namespace
 //==============================================================================
 namespace scph {
+
+  // Typedefs
+  typedef std::vector<std::string> svector;
 
   //============================================================================
   // Foward declarations:
@@ -86,6 +32,7 @@ namespace scph {
   std::string replace(std::string, const std::string&, const std::string&);
   svector splitString(std::string str, std::string delimiter);
   bool endsWith(const std::string&, const std::string &);
+  bool startsWith(const std::string&, const std::string &);
   bool contains(const std::string&, const std::string &);
 
   /// ROOT
@@ -99,6 +46,9 @@ namespace scph {
   bool isFloat(TTree*, const std::string&);
   bool isDouble(TTree*, const std::string&);
   bool isBranch(TTree*, const std::string&);
+  void getTFileTree( const std::string& filename, TFile*& file, TTree*& tree,
+      const std::string& options="",
+      const std::string& treename="DecayTree");
 
   /// Templated functions:
   // ntos
@@ -123,7 +73,8 @@ namespace scph {
     try {
       number = boost::lexical_cast<Type>(snumber);
     } catch (boost::bad_lexical_cast&) {
-      oierror << "Cannot convert \"" << snumber << "\" to string.";
+      std::cout << "Cannot convert \"" << snumber << "\" to string."
+        << std::endl;
       throw;
     }
     return number;

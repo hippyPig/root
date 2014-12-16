@@ -30,14 +30,18 @@ namespace pdg
   const double bs = 5366.77;
 
   // Lamdbas
+  const double lambda = 1115.68;
   const double lc = 2286.46;
   const double lb = 5619.4;
 
   // ccbar
   const double jpsi = 3096.916;
   const double psi2 = 3686.109;
+  const double psi2s = 3686.109;
 
   const double p = 938.272046;
+
+  const double rho = 775.49;
 
   // PDG IDs
   namespace id {
