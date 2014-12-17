@@ -6,7 +6,7 @@ SHELL = bash
 
 # A list of directories
 BASE_DIR = $(shell pwd)
-LIB_DIR  = $(BASE_DIR)/lib
+LIB_DIR  = ../lib
 EXE_DIR  = $(BASE_DIR)/bin
 SRC_DIR  = $(BASE_DIR)/src
 OBJ_DIR  = $(BASE_DIR)/obj
@@ -14,8 +14,6 @@ INC_DIR  = $(BASE_DIR)/include
 
 OBJ_EXT = o
 
-#ROOT_FLAGS = $(shell $(ROOTSYS)/bin/root-config --cflags) -lTreePlayer -lMinuit -lXMLIO -lMLP -lRIO
-#ROOT_LIBS  = $(shell $(ROOTSYS)/bin/root-config --libs) -lTreePlayer -lMinuit -lXMLIO -lMLP -lRIO
 ROOT_FLAGS = $(shell $(ROOTSYS)/bin/root-config --cflags)
 ROOT_LIBS  = $(shell $(ROOTSYS)/bin/root-config --libs)
 
@@ -29,11 +27,9 @@ BOOST_DIR = /usr/local
 INCLUDE += -I$(BOOST_DIR)/include
 LIBS    += -L$(BOOST_DIR)/lib
 
-SCPH_DIR=../
-USER_LIBS     += -L$(SCPH_DIR)/Stools/lib -lStools
-USER_LIBS     += -L$(SCPH_DIR)/Monkey/lib -lMonkey
-USER_INCLUDES += -I$(SCPH_DIR)/Stools/include/
-USER_INCLUDES += -I$(SCPH_DIR)/Monkey/include/
+USER_LIBS     += -L$(LIB_DIR) -lStools -lMonkey
+USER_INCLUDES += -I../Stools/include/
+USER_INCLUDES += -I../Monkey/include/
 INCLUDE += $(USER_INCLUDES)
 LIBS += $(USER_LIBS)
 
@@ -62,8 +58,5 @@ lib: $(LIB_DIR)/lib$(LIBNAME).so
 
 clean:
 	rm -f $(OBJS) $(LIB_DIR)/lib$(LIBNAME).so
-
-copy:
-	cp -f $(LIB_DIR)/lib$(LIBNAME).so $(SCPH_DIR)/lib/.
 
 

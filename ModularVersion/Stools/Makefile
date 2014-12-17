@@ -6,8 +6,7 @@ SHELL=bash
 
 # A list of directories
 BASE_DIR = $(shell pwd)
-LIB_DIR  = $(BASE_DIR)/lib
-EXE_DIR  = $(BASE_DIR)/bin
+LIB_DIR  = ../lib
 SRC_DIR  = $(BASE_DIR)/src
 OBJ_DIR  = $(BASE_DIR)/obj
 INC_DIR  = $(BASE_DIR)/include

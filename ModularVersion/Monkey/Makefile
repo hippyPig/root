@@ -1,13 +1,12 @@
 # name of the library
-LIBNAME = Dendrology
+LIBNAME = Monkey
 
 #Necessary to use shell built-in commands
 SHELL = bash
 
 # A list of directories
 BASE_DIR = $(shell pwd)
-LIB_DIR  = $(BASE_DIR)/lib
-EXE_DIR  = $(BASE_DIR)/bin
+LIB_DIR  = ../lib
 SRC_DIR  = $(BASE_DIR)/src
 OBJ_DIR  = $(BASE_DIR)/obj
 INC_DIR  = $(BASE_DIR)/include
@@ -18,27 +17,20 @@ FLAGS  		 = -O3 -Wall -W -fPIC
 INCLUDE		+= -I$(INC_DIR)
 FLAGS       += ${INCLUDE}
 FLAGS       += ${ROOT_FLAGS}
-#FLAGS       += -lRooFitCore -lRooFit -lRooStats -lFoam
 LIBS         = ${ROOT_LIBS}
 
 BOOST_DIR = /usr/local
 INCLUDE += -I$(BOOST_DIR)/include
 LIBS    += -L$(BOOST_DIR)/lib
 
-ROOT_FLAGS   = $(shell $(ROOTSYS)/bin/root-config --cflags)
-ROOT_LIBS    = $(shell $(ROOTSYS)/bin/root-config --libs) -lTreePlayer -lMinuit -lXMLIO -lMLP -lRIO -lTMVA
-ROOFIT_LIBS  = ${ROOT_LIBS} -lRooFitCore -lRooFit -lRooStats -lFoam
 
-SCPH_DIR=../
-#USER_LIBS += -L$(SCPH_DIR)/Easel/lib/ -lEasel
-USER_LIBS += -L$(SCPH_DIR)/Stools/lib/ -lStools
-USER_LIBS += -L$(SCPH_DIR)/Knives/lib/ -lKnives
-USER_LIBS += -L$(SCPH_DIR)/Monkey/lib/ -lMonkey
+ROOT_FLAGS  := $(shell $(ROOTSYS)/bin/root-config --cflags)
+ROOT_LIBS   := $(shell $(ROOTSYS)/bin/root-config --libs)
 
-#USER_INCLUDES += -I$(SCPH_DIR)/Easel/include/
-USER_INCLUDES += -I$(SCPH_DIR)/Stools/include/
-USER_INCLUDES += -I$(SCPH_DIR)/Knives/include/
-USER_INCLUDES += -I$(SCPH_DIR)/Monkey/include/
+SCPH_DIR=..
+USER_LIBS += -L$(LIB_DIR) -lStools
+
+USER_INCLUDES += -I../Stools/include/
 
 ROOT_LIBS += $(USER_LIBS)
 
@@ -61,12 +53,12 @@ $(OBJ_DIR)/%.$(OBJ_EXT): $(SRC_DIR)/%.cpp $(INC_DIR)/%.hpp
 	$(CXX) $(FLAGS) -c $< -o $@
 
 $(LIB_DIR)/lib$(LIBNAME).so: $(OBJS)
-	$(LD) $(LDFLAGS) $(ROOFIT_LIBS) -shared -o $(LIB_DIR)/lib$(LIBNAME).so $(OBJS) $(ROOT_LIBS)
+	$(LD) $(LDFLAGS) -shared -o $(LIB_DIR)/lib$(LIBNAME).so $(OBJS) $(ROOT_LIBS)
 
 lib: $(LIB_DIR)/lib$(LIBNAME).so
 
 clean:
-	rm -f $(OBJS) $(LIB_DIR)/*.so
+	rm -f $(OBJS) $(LIB_DIR)/lib$(LIBNAME).so
 
 copy:
 	cp -f $(LIB_DIR)/lib$(LIBNAME).so $(SCPH_DIR)/lib/.
