@@ -1,4 +1,4 @@
-dentrology
+dendrology
 ==========
 
 Dendrology is the study of trees.
